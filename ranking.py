@@ -1,4 +1,5 @@
 import random
+import math
 
 def two_ch(num,n):#二進数リストを十進数に
     n = n-1
@@ -14,18 +15,47 @@ def max_two(ls):#2のn乗の最大を返す
         n += 1
     return n
 
+log = {}
+times = 0
+task = 0.0
+howlen = 0
+
+def up_task():
+    global task
+    global howlen
+    task += 1/(math.log2(howlen) * howlen)
+    
+
 def quest(A,B):#AとBの大きいほうを入力
+    global log
+    global times
+    global task
+    global howlen
+    if (A,B) in list(log.keys()):
+        up_task()
+        return not(log[(A,B)])
+    elif (B,A) in list(log.keys()):
+        up_task()
+        return not(log[(B,A)])
     IN = ""
     while not(IN in ["a","b","A","B"]):
-        memo = "A:" + str(A) + ",B:" + str(B)
+        par = str((task*1000//1)/10)
+        while len(par) < 4:
+            par = "0" + par
+        memo =par + "% " + "A:" + str(A) + ",B:" + str(B)
         IN = input(memo)
+    times += 1
     if IN in ["a","A"]:
         out = False
     else:
         out = True
+    log[(A,B)] = out
+    up_task()
     return out
 
 def add_ls(self,ls):#リストに要素を昇順になるように挿入
+    global task
+    global howlen
 #    print("ls",self,ls)
     if ls == []:
 #        print("[self]")
@@ -68,12 +98,14 @@ def randomls(ls):#リストをシャッフル
 theme = input("テーマ(theme)")
 obje = txt2ls("in.txt")
 obje = randomls(obje)
+howlen = len(obje)
 rank = []
 
-for i in obje:
-    rank = add_ls(i,rank)
-
 print("より「" + str(theme) + "」である方を選べ")
+
+for i in obje:
+    task = len(rank) / howlen
+    rank = add_ls(i,rank)
 
 n = 1
 rank = rank[::-1]
@@ -81,3 +113,4 @@ print("Ranking")
 for i in rank:
     print(str(n)+". "+str(i))
     n += 1
+print("times",times)
